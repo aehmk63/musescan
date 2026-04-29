@@ -16,13 +16,13 @@
 <html lang="fr" dir="ltr">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>المتحف المركزي للجيش — Musée de l'armée centrale</title>
 
     {{-- Fonts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
 
     {{-- jsQR : décodage QR réel via canvas --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.js"></script>
@@ -35,6 +35,7 @@
         html { scroll-behavior: smooth; }
 
         :root {
+            --header-h: 64px;
             --hdr-green:  #132016;
             --dark-green: #0e1b10;
             --gold:       #c8a84b;
@@ -46,7 +47,8 @@
             --muted-gold: rgba(200,168,75,0.6);
             --fa: 'Amiri', 'Traditional Arabic', serif;
             --ff: 'Cormorant Garamond', Georgia, serif;
-            --fu: 'Jost', sans-serif;
+            --fh: 'Cinzel', 'Times New Roman', serif;
+            --fu: 'EB Garamond', Georgia, serif;
         }
 
         body {
@@ -55,6 +57,8 @@
             color: #fff;
             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
+            text-size-adjust: 100%;
         }
 
         /* ============================================================
@@ -64,9 +68,10 @@
             position: fixed;
             top: 0; left: 0; right: 0;
             z-index: 100;
-            height: 70px;
+            height: var(--header-h);
             background: var(--hdr-green);
             border-bottom: 1px solid rgba(200,168,75,0.2);
+            backdrop-filter: blur(6px);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -82,19 +87,22 @@
         .hdr-block.r { flex-direction: row-reverse; }
 
         .emblem {
-            width: 44px; height: 44px;
+            width: 56px; height: 56px;
             border-radius: 50%;
             border: 1px solid var(--muted-gold);
             overflow: hidden;
             flex-shrink: 0;
             background: rgba(200,168,75,0.06);
             display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 0 3px rgba(200,168,75,0.08), 0 8px 18px rgba(0,0,0,0.35);
         }
 
         .emblem img {
             width: 100%; height: 100%;
-            object-fit: contain;
-            padding: 4px;
+            object-fit: cover;
+            border-radius: 50%;
+            transform: scale(1.07);
+            filter: contrast(1.08) saturate(0.95);
         }
 
         .emblem-fallback {
@@ -106,18 +114,18 @@
 
         .hdr-txt { line-height: 1.35; }
         .hdr-t1 {
-            font-family: var(--fu);
+            font-family: var(--fh);
             font-size: 10px;
             font-weight: 600;
-            letter-spacing: 0.18em;
+            letter-spacing: 0.13em;
             text-transform: uppercase;
             color: var(--gold);
         }
         .hdr-t2 {
             font-family: var(--fu);
             font-size: 10px;
-            font-weight: 300;
-            letter-spacing: 0.13em;
+            font-weight: 500;
+            letter-spacing: 0.09em;
             text-transform: uppercase;
             color: var(--muted-gold);
         }
@@ -128,14 +136,32 @@
         ============================================================ */
         .hero {
             position: relative;
-            height: 100vh;
-            min-height: 640px;
+            height: calc(var(--vh, 1vh) * 100);
+            min-height: 700px;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
             overflow: hidden;
-            padding-top: 70px;
+            padding-top: var(--header-h);
+            background: #051c13;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(circle at 50% 0%, rgba(200,168,75,0.14), transparent 44%),
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(255,255,255,0.012) 0px,
+                    rgba(255,255,255,0.012) 1px,
+                    transparent 1px,
+                    transparent 3px
+                );
+            z-index: 1;
         }
 
         /*
@@ -144,26 +170,34 @@
         └──────────────────────────────────────────┘
         */
         .hero-bg {
-            position: absolute; inset: 0;
-            background: url('{{ asset("images/bg.jpg") }}') center 35% / co no-repeat;
-            filter: brightness(0.32) saturate(0.65);
+            position: absolute;
+            top: var(--header-h);
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(560px, 94vw);
+            background: url('{{ asset("images/bg.jpg") }}') center 35% / cover no-repeat;
+            filter: brightness(0.28) saturate(0.6);
+            border-left: 1px solid rgba(200,168,75,0.12);
+            border-right: 1px solid rgba(200,168,75,0.12);
         }
 
         .hero-veil {
             position: absolute; inset: 0;
             background: linear-gradient(
                 to bottom,
-                rgba(13,27,14,0.6) 0%,
-                rgba(13,27,14,0.25) 45%,
-                rgba(13,27,14,0.72) 100%
+                rgba(7,23,14,0.4) 0%,
+                rgba(7,23,14,0.2) 38%,
+                rgba(7,23,14,0.78) 100%
             );
         }
 
         .hero-content {
             position: relative;
             z-index: 2;
-            max-width: 820px;
+            max-width: 560px;
             padding: 0 28px;
+            margin-top: 38px;
             animation: up 1.1s ease both;
         }
 
@@ -181,13 +215,13 @@
         }
 
         .hero-republic-fr {
-            font-family: var(--fu);
+            font-family: var(--fh);
             font-size: 9.5px;
             font-weight: 500;
-            letter-spacing: 0.3em;
+            letter-spacing: 0.24em;
             text-transform: uppercase;
             color: var(--muted-gold);
-            margin-bottom: 22px;
+            margin-bottom: 18px;
         }
 
         /* Séparateur doré ♦ */
@@ -213,22 +247,23 @@
 
         .hero-ar {
             font-family: var(--fa);
-            font-size: clamp(44px,8vw,90px);
+            font-size: clamp(48px,7vw,76px);
             font-weight: 700;
             color: #fff;
             direction: rtl;
             line-height: 1.1;
-            margin-bottom: 10px;
+            margin-bottom: 4px;
             text-shadow: 0 2px 30px rgba(0,0,0,0.45);
         }
 
         .hero-fr {
             font-family: var(--ff);
-            font-size: clamp(24px,4.5vw,58px);
+            font-size: clamp(26px,4.1vw,54px);
             font-weight: 400;
             font-style: italic;
             color: var(--gold-lt);
-            margin-bottom: 22px;
+            margin-bottom: 18px;
+            text-shadow: 0 0 24px rgba(200,168,75,0.25);
         }
 
         .hero-desc {
@@ -239,7 +274,7 @@
             color: rgba(255,255,255,0.6);
             line-height: 1.8;
             max-width: 500px;
-            margin: 0 auto 44px;
+            margin: 0 auto 36px;
         }
 
         /* Boutons */
@@ -252,28 +287,48 @@
 
         .hbtn {
             width: 100%;
-            max-width: 470px;
+            max-width: 320px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 12px;
-            font-family: var(--fu);
+            font-family: var(--fh);
             font-size: 12px;
             font-weight: 600;
-            letter-spacing: 0.26em;
+            letter-spacing: 0.2em;
             text-transform: uppercase;
             padding: 18px 32px;
             border: none;
             cursor: pointer;
             transition: all 0.22s;
             border-radius: 0;
+            position: relative;
+            overflow: hidden;
+            min-height: 52px;
+            touch-action: manipulation;
         }
 
         .hbtn-gold {
             background: var(--gold);
             color: #1c1406;
+            box-shadow: 0 8px 22px rgba(0,0,0,0.35);
         }
         .hbtn-gold:hover { background: var(--gold-lt); }
+
+        .hbtn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -120%;
+            width: 70%;
+            height: 100%;
+            background: linear-gradient(100deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.55s ease;
+        }
+
+        .hbtn:hover::before {
+            left: 130%;
+        }
 
         .hbtn-gold svg {
             width: 18px; height: 18px;
@@ -294,7 +349,7 @@
         /* Chevron bas */
         .hero-chevron {
             position: absolute;
-            bottom: 26px; left: 50%;
+            bottom: 18px; left: 50%;
             transform: translateX(-50%);
             z-index: 2;
             background: none;
@@ -303,6 +358,9 @@
             font-size: 24px;
             cursor: pointer;
             animation: bounce 2.2s ease-in-out infinite;
+            min-height: 44px;
+            min-width: 44px;
+            touch-action: manipulation;
         }
 
         @keyframes bounce {
@@ -363,104 +421,13 @@
         /* ============================================================
            SECTION PLAN (placeholder)
         ============================================================ */
-        .sec-plan {
-            background: var(--ivory);
-            border-top: 1px solid rgba(200,168,75,0.18);
-            padding: 80px clamp(24px,6vw,80px);
-        }
-
-        .plan-wrap { max-width: 960px; margin: 0 auto; }
-
-        .plan-hd {
-            text-align: center;
-            margin-bottom: 48px;
-        }
-
-        .plan-label {
-            display: block;
-            font-family: var(--fu);
-            font-size: 10px;
-            font-weight: 600;
-            letter-spacing: 0.28em;
-            text-transform: uppercase;
-            color: var(--gold);
-            margin-bottom: 14px;
-        }
-
-        .plan-ar {
-            font-family: var(--fa);
-            font-size: clamp(18px,2.8vw,30px);
-            color: var(--ink);
-            direction: rtl;
-            margin-bottom: 4px;
-        }
-
-        .plan-frf {
-            font-family: var(--ff);
-            font-size: clamp(14px,2vw,20px);
-            font-style: italic;
-            color: var(--ink-mid);
-        }
-
-        /*
-        ╔══════════════════════════════════════════════════════════════╗
-        ║  PLACEHOLDER — REMPLACER PAR LE PLAN DU MUSÉE               ║
-        ╚══════════════════════════════════════════════════════════════╝
-        */
-        .plan-box {
-            border: 1px dashed rgba(200,168,75,0.3);
-            border-radius: 3px;
-            height: 400px;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            gap: 14px;
-            background: rgba(200,168,75,0.025);
-            position: relative;
-        }
-
-        .plan-box::before {
-            content: '';
-            position: absolute; inset: 10px;
-            border: 1px dashed rgba(200,168,75,0.1);
-            border-radius: 2px;
-            pointer-events: none;
-        }
-
-        .plan-icon {
-            width: 48px; height: 48px;
-            border: 1px solid rgba(200,168,75,0.3);
-            border-radius: 3px;
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        .plan-icon svg {
-            width: 22px; height: 22px;
-            stroke: var(--gold); fill: none; stroke-width: 1.3;
-        }
-
-        .plan-box h3 {
-            font-family: var(--ff);
-            font-size: 20px;
-            font-weight: 300;
-            font-style: italic;
-            color: rgba(28,20,6,0.28);
-        }
-
-        .plan-box p {
-            font-family: var(--fu);
-            font-size: 11px;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            color: rgba(28,20,6,0.18);
-        }
-
         /* ============================================================
            FOOTER
         ============================================================ */
         .ftr {
             background: var(--hdr-green);
             border-top: 1px solid rgba(200,168,75,0.28);
-            padding: 56px 40px 48px;
+            padding: 52px 40px 44px;
             text-align: center;
         }
 
@@ -494,13 +461,14 @@
             font-style: italic;
             color: var(--muted-gold);
             margin-bottom: 26px;
+            text-shadow: 0 0 16px rgba(200,168,75,0.18);
         }
 
         .ftr-copy {
-            font-family: var(--fu);
+            font-family: var(--fh);
             font-size: 10px;
             font-weight: 400;
-            letter-spacing: 0.22em;
+            letter-spacing: 0.16em;
             text-transform: uppercase;
             color: rgba(200,168,75,0.3);
         }
@@ -517,6 +485,8 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
+            padding-top: max(20px, env(safe-area-inset-top));
+            padding-bottom: max(20px, env(safe-area-inset-bottom));
         }
 
         .qr-ov.open { display: flex; }
@@ -527,6 +497,7 @@
             border-radius: 4px;
             width: 100%;
             max-width: 420px;
+            max-height: min(92vh, 780px);
             overflow: hidden;
             animation: pop 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
         }
@@ -723,6 +694,8 @@
             cursor: pointer;
             transition: background 0.2s;
             margin-top: 4px;
+            min-height: 50px;
+            touch-action: manipulation;
         }
 
         #qrBtn:hover { background: var(--gold-lt); }
@@ -741,10 +714,51 @@
            RESPONSIVE
         ============================================================ */
         @media (max-width: 600px) {
-            .hdr { padding: 0 16px; }
+            :root { --header-h: 60px; }
+            .hdr { padding: 0 12px; }
+            .hdr-block { gap: 8px; }
             .hdr-t1, .hdr-t2 { font-size: 8.5px; }
-            .emblem { width: 36px; height: 36px; }
-            .hbtn { max-width: 100%; font-size: 11px; }
+            .emblem { width: 44px; height: 44px; }
+            .hero {
+                min-height: calc(var(--vh, 1vh) * 100);
+                padding-top: calc(var(--header-h) + env(safe-area-inset-top));
+            }
+            .hero-content {
+                width: 100%;
+                margin-top: 14px;
+                padding: 0 16px;
+            }
+            .hero-bg { width: 100vw; border: none; }
+            .hero-ar { font-size: clamp(36px, 13vw, 56px); }
+            .hero-fr { font-size: clamp(28px, 10vw, 40px); }
+            .hero-desc { font-size: 15px; line-height: 1.55; margin-bottom: 22px; }
+            .hbtn { max-width: 100%; font-size: 11px; min-height: 50px; }
+            .hero-chevron { bottom: 10px; }
+            .sec-org { padding: 64px 18px; }
+            .os-line { width: 52px; }
+            .ftr { padding: 40px 18px calc(32px + env(safe-area-inset-bottom)); }
+            .qr-ov {
+                align-items: flex-end;
+                padding: 0;
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+            .qr-box {
+                max-width: 100%;
+                border-left: none;
+                border-right: none;
+                border-bottom: none;
+                border-radius: 16px 16px 0 0;
+                max-height: calc(var(--vh, 1vh) * 92);
+            }
+            .qr-body { padding: 14px; }
+        }
+
+        @media (hover: none) {
+            .hbtn::before { display: none; }
+            .hbtn:active {
+                transform: scale(0.985);
+                filter: brightness(0.98);
+            }
         }
     </style>
 </head>
@@ -834,7 +848,7 @@
         </div>
     </div>
 
-    <button class="hero-chevron" onclick="goTo('sec-org')" type="button" aria-label="Défiler">&#8964;</button>
+    <button class="hero-chevron" onclick="goTo('sec-org')" type="button" aria-label="Défiler">&#709;</button>
 
 </section>
 
@@ -871,48 +885,6 @@
         <p class="org-fr">Direction de l'Information et de la Communication</p>
     </div>
 
-</section>
-
-
-{{-- ────────────────────────────────────────────
-     PLAN DU MUSÉE (PLACEHOLDER)
-     Entre organigramme et footer
-──────────────────────────────────────────── --}}
-<section class="sec-plan" id="sec-plan">
-    <div class="plan-wrap">
-
-        <div class="plan-hd">
-            <div class="org-sep" aria-hidden="true" style="margin-bottom:22px;">
-                <div class="os-line"></div>
-                <div class="os-diamond"></div>
-                <div class="os-line"></div>
-            </div>
-            <span class="plan-label">Navigation</span>
-            <p class="plan-ar">خريطة المتحف</p>
-            <p class="plan-frf">Plan &amp; Organisation du Musée</p>
-        </div>
-
-        {{--
-        ╔══════════════════════════════════════════════════════════════╗
-        ║  PLACEHOLDER — PLAN DU MUSÉE                                ║
-        ║  Remplacer ce bloc par :                                    ║
-        ║  · SVG interactif des 4 étages                              ║
-        ║  · Composant Alpine / Vue / React                           ║
-        ║  · Image du plan architectural                              ║
-        ╚══════════════════════════════════════════════════════════════╝
-        --}}
-        <div class="plan-box" role="img" aria-label="Emplacement réservé au plan du musée">
-            <div class="plan-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                    <path d="M3 21V7l9-4 9 4v14"/>
-                    <path d="M9 21v-6h6v6"/><path d="M9 9h.01M15 9h.01"/>
-                </svg>
-            </div>
-            <h3>Plan du Musée — 4 Étages</h3>
-            <p>Ce bloc sera remplacé par le diagramme interactif</p>
-        </div>
-
-    </div>
 </section>
 
 
@@ -1002,21 +974,44 @@
 ──────────────────────────────────────────── --}}
 <script>
 
+var SCROLL_Y = 0;
+
+function setViewportHeight() {
+    var vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', vh + 'px');
+}
+
+setViewportHeight();
+window.addEventListener('resize', setViewportHeight, { passive: true });
+window.addEventListener('orientationchange', setViewportHeight, { passive: true });
+
 /* ── Scroll ────────────────────────────── */
 function goTo(id) {
     var el = document.getElementById(id);
-    if (el) window.scrollTo({ top: el.getBoundingClientRect().top + scrollY - 68, behavior:'smooth' });
+    var header = document.querySelector('.hdr');
+    var offset = header ? header.offsetHeight + 4 : 68;
+    if (el) window.scrollTo({ top: el.getBoundingClientRect().top + scrollY - offset, behavior:'smooth' });
 }
 
 /* ── Modal ─────────────────────────────── */
 function openQr() {
     document.getElementById('qrOverlay').classList.add('open');
-    document.body.style.overflow = 'hidden';
+    SCROLL_Y = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = '-' + SCROLL_Y + 'px';
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
 }
 
 function closeQr() {
     document.getElementById('qrOverlay').classList.remove('open');
-    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+    window.scrollTo(0, SCROLL_Y || 0);
     stopCam();
     resetUi();
 }
@@ -1026,6 +1021,9 @@ function bgClose(e) {
 }
 
 document.addEventListener('keydown', function(e){ if (e.key==='Escape') closeQr(); });
+document.addEventListener('visibilitychange', function(){
+    if (document.hidden && CAM) stopCam();
+});
 
 /* ── Camera & jsQR ─────────────────────── */
 var CAM     = null;
@@ -1119,6 +1117,7 @@ function tick() {
 function onDetected(val) {
     ACTIVE = false;
     setStatus('ok', 'Code QR détecté !');
+    if (navigator.vibrate) navigator.vibrate(45);
 
     document.getElementById('qrFrame').style.display = 'none';
     document.getElementById('qrRes').style.display   = 'block';
