@@ -173,13 +173,12 @@
             position: absolute;
             top: var(--header-h);
             bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: min(560px, 94vw);
-            background: url('{{ asset("images/bg.jpg") }}') center 35% / cover no-repeat;
+            left: 0;
+            right: 0;
+            width: 100%;
+            background: url('{{ asset("images/bg.jpg") }}') center center / cover no-repeat;
             filter: brightness(0.28) saturate(0.6);
-            border-left: 1px solid rgba(200,168,75,0.12);
-            border-right: 1px solid rgba(200,168,75,0.12);
+            border: none;
         }
 
         .hero-veil {
@@ -842,7 +841,7 @@
             </button>
 
             <button class="hbtn hbtn-outline" onclick="goTo('sec-org')" type="button">
-                Commencer la visite &nbsp;→
+                Commencer la visite
             </button>
 
         </div>
